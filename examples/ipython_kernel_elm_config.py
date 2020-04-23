@@ -39,6 +39,13 @@ class SampleFilter(BaseFilter):
                 self.logger.info('LINE INPUT FROM USER: "FORBIDDEN_WORD" found, replacing with "SAFE_WORD"')
             output.append(line)
 
+        for line in lines:
+            self.logger.info('LINE INPUT FROM USER: {}'.format(repr(line)))
+            if 'XYZ' in line:
+                line = line.replace('XYZ', 'ABC')
+                self.logger.info('LINE INPUT FROM USER: "XYZ" found, replacing with "ABC"')
+            output.append(line)
+
         return output
 
     # Simple exclusion from command history, try for example:
