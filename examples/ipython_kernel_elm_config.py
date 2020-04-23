@@ -34,6 +34,9 @@ class SampleFilter(BaseFilter):
         output = []
         for line in lines:
             self.logger.info('LINE INPUT FROM USER: {}'.format(repr(line)))
+            if 'FORBIDDEN_WORD' in line:
+                line = line.replace('FORBIDDEN_WORD', 'SAFE_WORD')
+                self.logger.info('LINE INPUT FROM USER: "FORBIDDEN_WORD" found, replacing with "SAFE_WORD"')
             if 'XYZ' in line:
                 line = line.replace('XYZ', 'ABC')
                 self.logger.info('LINE INPUT FROM USER: "XYZ" found, replacing with "ABC"')
