@@ -1,7 +1,7 @@
 import os.path
 import tempfile
 import logging
-
+import csv
 c = get_config()    # noqa - defined by traitlets
 
 
@@ -31,16 +31,16 @@ class SampleFilter(BaseFilter):
         self.logger.info('OUTPUT FROM SHELL: {}'.format(text))
 
     def process_text_input(self, lines):
-        output = []
+        output = [] 
         for line in lines:
             self.logger.info('LINE INPUT FROM USER: {}'.format(repr(line)))
-            if 'FORBIDDEN_WORD' in line:
-                line = line.replace('FORBIDDEN_WORD', 'SAFE_WORD')
-                self.logger.info('LINE INPUT FROM USER: "FORBIDDEN_WORD" found, replacing with "SAFE_WORD"')
-            if 'XYZ' in line:
-                line = line.replace('XYZ', 'ABC')
-                self.logger.info('LINE INPUT FROM USER: "XYZ" found, replacing with "ABC"')
+            with open('arSorted.csv', newline='') as csvfile:
+                words = csv.reader(csvfile, delimiter=',')
+                for word in words:
+                    line = line.replace(word[1], word[0])
+                self.logger.info('LINE INPUT FROM USER: "' + word[0] + '" found, replacing with" ' + word[1])
             output.append(line)
+        print(output)
         return output
 
     # Simple exclusion from command history, try for example:
