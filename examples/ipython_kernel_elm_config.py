@@ -1,7 +1,10 @@
 import os.path
 import tempfile
 import logging
+
 import csv
+import re
+
 c = get_config()    # noqa - defined by traitlets
 
 
@@ -32,15 +35,30 @@ class SampleFilter(BaseFilter):
 
     def process_text_input(self, lines):
         output = [] 
+
+        arWords = []
+        enWords = []
+        with open('enSorted.csv', newline='') as csvfile:
+            words = csv.reader(csvfile, delimiter=',')
+            for word in words:
+                enWords.append(word[0])
+                arWords.append(word[1])
+
+        delms = ["(",")"," ",":","\"","'","=","+","-","!","&","^","*","[","]",";",".",",","/","<",">"]
+        temp_str = "("+'|'.join(map(re.escape, delms))+")"
+        delms_regex = re.compile(temp_str)
+
         for line in lines:
             self.logger.info('LINE INPUT FROM USER: {}'.format(repr(line)))
-            with open('arSorted.csv', newline='') as csvfile:
-                words = csv.reader(csvfile, delimiter=',')
-                for word in words:
-                    line = line.replace(word[1], word[0])
-                self.logger.info('LINE INPUT FROM USER: "' + word[0] + '" found, replacing with" ' + word[1])
+            words = delms_regex.split(line)
+            for x in range(len(words)):
+                for i in range(len(enWords)):
+                    if words[x] == arWords[i]: 
+                        words[x] = enWords[i]
+            line = ''.join(words)
+            print(line)
+            #self.logger.info('LINE INPUT FROM USER: "' + word[0] + '" found, replacing with" ' + word[1])
             output.append(line)
-        print(output)
         return output
 
     # Simple exclusion from command history, try for example:
