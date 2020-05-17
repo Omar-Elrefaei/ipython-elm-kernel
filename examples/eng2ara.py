@@ -21,4 +21,5 @@ with open('test.py', newline="\n") as codefile:
 			for i in range(len(enWords)):
 				if words[x] == enWords[i]: 
 					words[x] = arWords[i]
-		print(''.join(words))
+		line = ''.join(words)
+		print(line, end="")

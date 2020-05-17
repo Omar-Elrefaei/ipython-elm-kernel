@@ -56,7 +56,7 @@ class SampleFilter(BaseFilter):
                     if words[x] == arWords[i]: 
                         words[x] = enWords[i]
             line = ''.join(words)
-            print(line)
+            print(line, end="")
             #self.logger.info('LINE INPUT FROM USER: "' + word[0] + '" found, replacing with" ' + word[1])
             output.append(line)
         return output

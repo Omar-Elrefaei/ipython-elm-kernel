@@ -1,27 +1,6 @@
- من time حضر localtime
+  عرف F(n):
+      اذا n == 0: ارجع 0
+      او اذا n == 1: ارجع 1
+      اخيرا: ارجع F(n-1)+F(n-2)
 
-
-
- activities = {8: 'Sleeping',
-
-               22: 'Resting' }
-
-
-
- time_now = localtime()
-
- hour = time_now.tm_hour
-
-
-
- لكل activity_time في sorted(activities.keys()):
-
-     اذا hour < activity_time:
-
-         اطبع (activities[activity_time])
-
-         break
-
- اخيرا:
-
-     اطبع ('Unknown, AFK أو sleeping!')
+ اطبع(F(6))
