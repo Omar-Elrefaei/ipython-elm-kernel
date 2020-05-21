@@ -2,9 +2,7 @@ import os.path
 import tempfile
 import logging
 
-import csv
-import re
-import eng2ara
+import ar2eng
 
 c = get_config()    # noqa - defined by traitlets
 
@@ -18,11 +16,13 @@ class SampleFilter(BaseFilter):
 
         ident = kernel.ident
 
-        logfile = os.path.join(tempfile.gettempdir(), 'elm-kernel-{}.log'.format(ident))
+        logfile = os.path.join(tempfile.gettempdir(),
+                               'elm-kernel-{}.log'.format(ident))
 
         logger = self.logger = logging.getLogger('elm-kernel-{}'.format(ident))
         fh = self.fh = logging.FileHandler(logfile)
-        formatter = logging.Formatter('%(asctime)s - %(levelname)s: %(message)s')
+        formatter = logging.Formatter(
+            '%(asctime)s - %(levelname)s: %(message)s')
         fh.setFormatter(formatter)
         logger.addHandler(fh)
         logger.setLevel(logging.INFO)
@@ -37,7 +37,7 @@ class SampleFilter(BaseFilter):
     def process_text_input(self, lines):
         ## self.logger.info('LINE INPUT FROM USER: {}'.format(repr(line)))
         ## self.logger.info('LINE INPUT FROM USER: "' + word[0] + '" found, replacing with" ' + word[1])
-        output = eng2ara.transpile(lines)
+        output = ar2eng.transpile(lines)
         return(output)
 
     # Simple exclusion from command history, try for example:
@@ -45,12 +45,14 @@ class SampleFilter(BaseFilter):
     def process_run_cell(self, code, options):
         if 'no-history' in code:
             options['store_history'] = False
-            self.logger.info('RUN CODE, excluded from command history: {}'.format(repr(code)))
+            self.logger.info(
+                'RUN CODE, excluded from command history: {}'.format(repr(code)))
         return code
 
     def process_completion(self, code, cursor_pos, completion_data):
         self.logger.info('COMPLETION REQUESTED FOR: {}'.format(repr(code)))
-        self.logger.info('COMPLETION RESULTS: {}'.format(completion_data['matches']))
+        self.logger.info('COMPLETION RESULTS: {}'.format(
+            completion_data['matches']))
         completion_data['matches'].insert(0, 'some-new-suggestion')
         return completion_data
 
@@ -59,8 +61,10 @@ class SampleFilter(BaseFilter):
         This is called after executing a cell with the result of that
         """
         self.logger.info('CELL EXECUTION RESULT: {}'.format(repr(result)))
-        self.logger.info('CELL EXECUTION EXPRESSION RESULT : {}'.format(repr(result.result)))
-        self.logger.info('CELL EXECUTION EXPRESSION OUTPUT: {}'.format(repr(self.shell.displayhook.exec_result)))
+        self.logger.info(
+            'CELL EXECUTION EXPRESSION RESULT : {}'.format(repr(result.result)))
+        self.logger.info('CELL EXECUTION EXPRESSION OUTPUT: {}'.format(
+            repr(self.shell.displayhook.exec_result)))
 
 
 sample_filter = SampleFilter()

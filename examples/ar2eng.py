@@ -19,7 +19,12 @@ delms_regex = re.compile(temp_str)
 
 
 def transpile(lines):
-    # Concate lines ending with "\" to split on qoutes properly
+    """
+    Takes a list of code lines, and returns a list of transpiled lines.
+    The current implementation concats multi-line statements,
+    and could potentially translate comments
+    """
+    # Concats lines ending with "\" to split on quotes properly
     multiline_code = ""
     for line in lines:
         multiline_code += line
