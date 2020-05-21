@@ -4,6 +4,7 @@ import logging
 
 import csv
 import re
+import eng2ara
 
 c = get_config()    # noqa - defined by traitlets
 
@@ -34,32 +35,10 @@ class SampleFilter(BaseFilter):
         self.logger.info('OUTPUT FROM SHELL: {}'.format(text))
 
     def process_text_input(self, lines):
-        output = [] 
-
-        arWords = []
-        enWords = []
-        with open('enSorted.csv', newline='') as csvfile:
-            words = csv.reader(csvfile, delimiter=',')
-            for word in words:
-                enWords.append(word[0])
-                arWords.append(word[1])
-
-        delms = ["(",")"," ",":","\"","'","=","+","-","!","&","^","*","[","]",";",".",",","/","<",">"]
-        temp_str = "("+'|'.join(map(re.escape, delms))+")"
-        delms_regex = re.compile(temp_str)
-
-        for line in lines:
-            self.logger.info('LINE INPUT FROM USER: {}'.format(repr(line)))
-            words = delms_regex.split(line)
-            for x in range(len(words)):
-                for i in range(len(enWords)):
-                    if words[x] == arWords[i]: 
-                        words[x] = enWords[i]
-            line = ''.join(words)
-            print(line, end="")
-            #self.logger.info('LINE INPUT FROM USER: "' + word[0] + '" found, replacing with" ' + word[1])
-            output.append(line)
-        return output
+        ## self.logger.info('LINE INPUT FROM USER: {}'.format(repr(line)))
+        ## self.logger.info('LINE INPUT FROM USER: "' + word[0] + '" found, replacing with" ' + word[1])
+        output = eng2ara.transpile(lines)
+        return(output)
 
     # Simple exclusion from command history, try for example:
     # In [1]: print('something to exclude... no-history')
