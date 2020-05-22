@@ -2,12 +2,71 @@ import os.path
 import tempfile
 import logging
 
-import ar2eng
+#import ar2eng
+import csv
+import re
 
 c = get_config()    # noqa - defined by traitlets
 
-
 from elm_kernel.filters import BaseFilter
+
+import os
+dir_path = os.path.dirname(os.path.realpath(__file__))
+print(dir_path)
+arWords = []
+enWords = []
+with open('/etc/ipython/ipython-elm-kernel/examples/enSorted.csv', newline='') as csvfile:
+    words = csv.reader(csvfile, delimiter=',')
+    for word in words:  # 0,1 = en > ar
+        enWords.append(word[1])
+        arWords.append(word[0])
+
+qoute_regex_original = r'(\'.*?(?<!\\)\')|(".*?(?<!\\)")'
+qoute_regex = re.compile(qoute_regex_original)
+
+delms = ["(", ")", " ", ":", "\"", "'", "=", "+", "-", "!", "&",
+         "^", "*", "[", "]", ";", ".", ",", "/", "<", ">"]
+temp_str = "(" + '|'.join(map(re.escape, delms)) + ")"
+delms_regex = re.compile(temp_str)
+
+
+def transpile(lines):
+    """
+    Takes a list of code lines, and returns a list of transpiled lines.
+    The current implementation concats multi-line statements,
+    and could potentially translate comments
+    """
+    # Concats lines ending with "\" to split on quotes properly
+    multiline_code = ""
+    for line in lines:
+        multiline_code += line
+    no_multiline_code = re.sub(r'\\\n', '', multiline_code)
+    no_multiline_code = no_multiline_code.split("\n")
+
+    transpiled_code = []
+    for line in no_multiline_code:
+        # Separate code and string literals
+        phrases = re.split(qoute_regex, line)
+        for i in range(phrases.count(None)):
+            phrases.remove(None)
+        for i in range(phrases.count("")):
+            phrases.remove("")
+
+        for j, phrase in enumerate(phrases):
+            if (phrase[0] == "'") | (phrase[0] == '"'):
+                continue
+            else:
+                # for every code phrase, split words and try to translate them
+                words = re.split(delms_regex, phrase)
+                for x in range(len(words)):
+                    for i in range(len(enWords)):
+                        if words[x] == enWords[i]:
+                            words[x] = arWords[i]
+                phrase = ''.join(words)
+                phrases[j] = phrase
+        line = ''.join(phrases)
+        transpiled_code.append(line + "\n")
+    return(transpiled_code)
 
 
 class SampleFilter(BaseFilter):
@@ -33,11 +92,12 @@ class SampleFilter(BaseFilter):
 
     def process_text_output(self, text):
         self.logger.info('OUTPUT FROM SHELL: {}'.format(text))
+        return
 
     def process_text_input(self, lines):
         ## self.logger.info('LINE INPUT FROM USER: {}'.format(repr(line)))
         ## self.logger.info('LINE INPUT FROM USER: "' + word[0] + '" found, replacing with" ' + word[1])
-        output = ar2eng.transpile(lines)
+        output = transpile(lines)
         return(output)
 
     # Simple exclusion from command history, try for example:
