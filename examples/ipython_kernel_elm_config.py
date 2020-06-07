@@ -15,7 +15,7 @@ dir_path = os.path.dirname(os.path.realpath(__file__))
 print(dir_path)
 arWords = []
 enWords = []
-with open('/etc/ipython/ipython-elm-kernel/examples/enSorted.csv', newline='') as csvfile:
+with open('/etc/ipython/ipython-elm-kernel/examples/arSorted.csv', newline='') as csvfile:
     words = csv.reader(csvfile, delimiter=',')
     for word in words:  # 0,1 = en > ar
         enWords.append(word[1])
