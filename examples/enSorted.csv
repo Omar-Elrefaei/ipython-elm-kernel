@@ -17,7 +17,7 @@ print,اطبع
 yield,اعطي
 raise,خطأ
 with,بإستخدام
-elif,او اذا
+elif,اواذا
 list,مجموعة
 else,اخيرا
 pass,تجاهل
