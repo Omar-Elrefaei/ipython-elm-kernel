@@ -3,7 +3,7 @@ import re
 
 arWords = []
 enWords = []
-with open('enSorted.csv', newline='') as csvfile:
+with open('arSorted.csv', newline='') as csvfile:
     words = csv.reader(csvfile, delimiter=',')
     for word in words:  # 0,1 = en > ar
         enWords.append(word[1])
